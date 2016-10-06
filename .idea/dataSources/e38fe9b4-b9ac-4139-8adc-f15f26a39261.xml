@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="MySQL - test@localhost">
+  <database-model serializer="dbm" rdbms="MYSQL" format-version="2.6">
+    <schema id="1" name="test">
+      <visible>1</visible>
+    </schema>
+    <schema id="2" name="information_schema"/>
+    <schema id="3" name="mysql"/>
+    <schema id="4" name="performance_schema"/>
+    <schema id="5" name="phpmyadmin"/>
+    <routine id="6" parent="1" name="AddGeometryColumn">
+      <routine-kind>PROCEDURE</routine-kind>
+    </routine>
+    <routine id="7" parent="1" name="DropGeometryColumn">
+      <routine-kind>PROCEDURE</routine-kind>
+    </routine>
+    <argument id="8" parent="6" name="catalog">
+      <direction>IN</direction>
+      <data-type>varchar(64)|0</data-type>
+    </argument>
+    <argument id="9" parent="6" name="t_schema">
+      <direction>IN</direction>
+      <data-type>varchar(64)|0</data-type>
+    </argument>
+    <argument id="10" parent="6" name="t_name">
+      <direction>IN</direction>
+      <data-type>varchar(64)|0</data-type>
+    </argument>
+    <argument id="11" parent="6" name="geometry_column">
+      <direction>IN</direction>
+      <data-type>varchar(64)|0</data-type>
+    </argument>
+    <argument id="12" parent="6" name="t_srid">
+      <direction>IN</direction>
+      <data-type>int(11)|0</data-type>
+    </argument>
+    <argument id="13" parent="7" name="catalog">
+      <direction>IN</direction>
+      <data-type>varchar(64)|0</data-type>
+    </argument>
+    <argument id="14" parent="7" name="t_schema">
+      <direction>IN</direction>
+      <data-type>varchar(64)|0</data-type>
+    </argument>
+    <argument id="15" parent="7" name="t_name">
+      <direction>IN</direction>
+      <data-type>varchar(64)|0</data-type>
+    </argument>
+    <argument id="16" parent="7" name="geometry_column">
+      <direction>IN</direction>
+      <data-type>varchar(64)|0</data-type>
+    </argument>
+  </database-model>
+</dataSource>

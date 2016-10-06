@@ -1,0 +1,12 @@
+#predajOglasZaPredmet{
+    padding: 3px;
+    margin-top: 0px;
+}
+.navbar-right{
+    height: 17px;
+    margin-bottom: auto;
+}
+body{
+    background-image: url("../backgroundImage.jpg");
+    background-size: cover;
+}

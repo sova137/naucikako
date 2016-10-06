@@ -1,0 +1,14 @@
+
+body{
+    background-image: url("../backgroundImage.jpg");
+}
+#profilna{
+
+}
+#name{
+    font-size:1.2em;
+}
+#horizontalScrollBar{
+    overflow-x: auto;
+    white-space: nowrap;
+}

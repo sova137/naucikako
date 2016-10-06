@@ -1,0 +1,89 @@
+.page-title {
+    text-align: center;
+    font-weight: 100;
+    color: whitesmoke;
+    bold: 23;
+    padding-bottom: 50px;
+}
+
+#search-header {
+
+    padding: 30px;
+}
+
+header{
+    padding: 30px;
+}
+
+.row{
+    margin-bottom:50px;
+}
+
+.dropdown{
+    width:100%;
+}
+
+.dropdown-toggle{
+    width:100%;
+}
+
+.dropdown-menu{
+    width:100%;
+}
+
+#pretrazi{
+    width:100%;
+}
+
+body{
+    background-image: url("../backgroundImage.jpg");
+    background-size: cover;
+}
+
+
+ul{
+    list-style: none;
+}
+
+#tablerow {
+    display: table;
+    float:none;
+    margin:auto;
+    margin-bottom:60px;
+
+}
+
+#colSlika {
+    float: none;
+    display: table-cell;
+    vertical-align: middle;
+
+}
+
+
+
+#colPodaci {
+
+    float: none;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+#ime-i-prezime{
+    margin:0px 0px 0px 0px;
+    padding:0px;
+    font-weight: bold;
+    font-size:1.5em;
+}
+
+#zanimanje{
+    margin:0px 0px 0px 0px;
+    padding:0px;
+    font-style:italic;
+    font-size:1em;
+}
+
+#kontaktiraj{
+    margin-top:10px;
+}
+
