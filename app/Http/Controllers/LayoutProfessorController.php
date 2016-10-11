@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Zahtev;
 use App\Profesor;
+use App\ZahtevBezProfesora;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,10 +31,20 @@ class LayoutProfessorController extends Controller
         return $jobDescription->Opis_oglasa;
     }
 
+    //u slucaju da je javni zahtev treba pristupiti drugoj tabeli
     public function getUserAttributes(){//Ova metoda ce vracati podatke o korisniku
+        $javniZahtev = $_GET['javniZahtev'];
        $sifZahteva=$_GET['sifZahteva'];
-       $zahtev = Zahtev::find($sifZahteva);
+
+       if(!$javniZahtev) {
+           $zahtev = Zahtev::find($sifZahteva);
+       }
+       else{
+           $zahtev = ZahtevBezProfesora::find($sifZahteva);
+       }
        $podaci = $zahtev->dohvatiPodatkeZaMejl();
        return compact('podaci');
     }
+
+
 }

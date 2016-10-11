@@ -2,7 +2,14 @@
  * Created by Nikola on 9/30/2016.
  */
 
-
+function printValidSettings(data){
+    $("#email-settings").val(data.email);
+    if(data.telefon == null) $("#telefon").val("06");
+    else $("#telefon").val(data.telefon);
+    $("#newpass").val("");
+    $("#confnewpass").val("");
+    $("#opis-settings").val(data.opis);
+}
 
 $(document).on('click', '#promeni',function() {
 
@@ -15,8 +22,20 @@ $(document).on('click', '#promeni',function() {
 
 
 
-    $.post('updateSettings', "&telefon=" + $("#telefon").val() + "&newpass=" + $("#newpass").val() + "&confnewpass=" + $("#confnewpass").val() ,function(data){
+    $.post('updateSettings', "&telefon=" + $("#telefon").val() + "&email=" + $("#email-settings").val() + "&newpass=" + $("#newpass").val() + "&confnewpass=" + $("#confnewpass").val() +"&opis="+ $("#opis-settings").val() ,function(data){
         alert(data);
     });
 
+    $.get('/validProfileSettings' , function(data){
+       printValidSettings(data);
+    });
+
+
+
+});
+
+$(document).on('click', '#otkazi',function() {
+    $.get('/validProfileSettings' , function(data){
+        printValidSettings(data);
+    });
 });

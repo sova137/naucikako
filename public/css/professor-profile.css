@@ -1,13 +1,24 @@
 
-body{
-    background-image: url("../backgroundImage.jpg");
-}
-#profilna{
 
+#prof-info{
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
-#name{
-    font-size:1.2em;
+/* The Close Button */
+#close-dugme {
+    color: #201b73;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
 }
+
+#close-dugme:hover,
+#close-dugme:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 #horizontalScrollBar{
     overflow-x: auto;
     white-space: nowrap;

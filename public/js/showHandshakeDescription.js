@@ -4,7 +4,8 @@ $(document).ready(function () { //Ovo ce se pozivati za handshake
     var phoneNumber=$('#phoneNumber');
     var mail=$('#mail');
 
-    $.get('/getUserAtts',"sifZahteva=" + sifZahteva, function (data) {
+    //u promenljivoj cuvamo podatak da li je zahtev javni
+    $.get('/getUserAtts',"sifZahteva=" + sifZahteva + "&javniZahtev=" + javniZahtev, function (data) {
 
         $.each(data, function(index, element) {
             profilePicture.attr('src','/uploads/avatars/' + element.slika);

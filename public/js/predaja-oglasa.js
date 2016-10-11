@@ -116,11 +116,3 @@ function hideButtonAndKorak2(){
 }
 
 
-$('#SMS-obavestenje').change(function(){
-
-    if ($(this).is(':checked'))
-        document.getElementById("predaja-oglasa-br-telefona").style.display = "unset";
-    else
-        document.getElementById('predaja-oglasa-br-telefona').style.display="none";
-
-});

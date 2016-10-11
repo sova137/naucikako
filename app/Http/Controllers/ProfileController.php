@@ -17,6 +17,9 @@ use App\Profesor;
 use App\Smer;
 use App\Predmet;
 use App\Predaje;
+use Mail;
+use Illuminate\Support\Str;
+use App\User;
 class ProfileController
 {
     public function updateAvatar(Request $request){
@@ -46,9 +49,41 @@ class ProfileController
     public function showProfile(Request $request,$id){
 
     }
+
+    public function showSettings(){
+        $user =  Auth::user();
+        $profesor = Profesor::odUsera($user);
+        return view('profile-settings',compact('profesor'));
+    }
     public function addNewSubject(Request $request)
     {
+        $telefon = $request->input('telefon');
+        $user = Auth::user();
+        $profesor = Profesor::odUsera($user);
 
+        if(isset($telefon)) {
+            if (strlen($telefon) >= 9 && strlen($telefon) <= 10 && $telefon[0] == 0 && $telefon[1] == 6 && (in_array($telefon[2], array(0, 1, 2, 3, 4, 5, 6, 9)))) {
+                for ($i = 2; $i < strlen($telefon); $i++) {
+                    if (!(is_numeric($telefon[$i]))) {
+                        $returnMessage = "<script> alert('Oglas nije dodat! \\n Morate uneti validan broj telefona pri predaji prvog oglasa ili ga izmeniti u podesavanjima profila'); </script>";
+                        echo $returnMessage;
+                        return view('predaja-oglasa');
+                    }
+                }
+            } else {
+                $returnMessage = "<script> alert('Oglas nije dodat! \\n Morate uneti validan broj telefona pri predaji prvog oglasa ili ga izmeniti u podesavanjima profila'); </script>";
+                echo $returnMessage;
+                return view('predaja-oglasa');
+            }
+
+            $profesor->telefon = $telefon;
+            $profesor->save();
+        }
+
+        $SMScheck = $request->input('SMScheck');
+
+        if(isset($SMScheck)) $SMScheck = 1;
+        else $SMScheck = 0;
 
         $nazivFaksa = $request->input('fakultet-text-input');
 
@@ -68,28 +103,30 @@ class ProfileController
 
         $opis = $request->input('opis-text-input');
 
-        $user = Auth::user();
         $profesor = Profesor::odUsera($user);
 
         $predmet = Predmet::saNazivom($nazivPredmeta, $smer, $godinaArapski);
 
-        Predaje::addNewRow($profesor->sifProfesora, $predmet->sifPredmeta, $opis);
+        Predaje::addNewRow($profesor->sifProfesora, $predmet->sifPredmeta, $opis,$SMScheck);
 
         return view('predaja-oglasa');
     }
 
     public function deleteSubject(){
         $sifProfesora = Profesor::odUsera(Auth::user())->sifProfesora;
-        $sifPredmeta = $_GET['predmet'];
+        $sifPredmeta = $_POST['predmet'];
 
         Predaje::deleteRow( $sifProfesora,$sifPredmeta);
     }
 
     public function updateSubjectInfo(){
         $sifProfesora = Profesor::odUsera(Auth::user())->sifProfesora;
-        $sifPredmeta = $_GET['predmet'];
-        $opis = $_GET['opis'];
-        Predaje::updateRow( $sifProfesora,$sifPredmeta,$opis);
+        $sifPredmeta = $_POST['predmet'];
+        $opis = $_POST['opis'];
+
+        $SMScheck = $_POST['SMScheck'];
+
+        Predaje::updateRow( $sifProfesora,$sifPredmeta,$opis,$SMScheck);
     }
 
     public function showMySubjects(){
@@ -137,15 +174,60 @@ class ProfileController
         return view('successfully-registered-page');
     }
 
+    private function sendConfirmationForNewEmail($user,$email){
+        $confirmation_code = hash_hmac('sha256', Str::random(40), config('app.key'));
+        $data = [
+          'oldEmail' => $user->email,
+          'newEmail' => $email,
+          'ime' =>$user->firstname,
+          'prezime' => $user->lastname,
+          'key' => $confirmation_code
+        ];
+
+        $user->email_change_code = $confirmation_code;
+        $user->save();
+
+        Mail::queue('emailChange', $data , function($msg) use ($email) {
+                $msg->to("$email")->subject("Zahtev za promenu email-a");
+        });
+    }
+
+    private function emailZadovoljava($email){
+        return !User::postojiVecMejl($email,Auth::user());
+    }
+
     public function updateSettings(){
 
         $telefon = $_POST['telefon'];
         $newpass = $_POST['newpass'];
         $confnewpass = $_POST['confnewpass'];
+        $email = $_POST['email'];
+        $opis = $_POST['opis'];
 
+        $emailString = ""; // za poruke oko promene e-maila
+
+        if($email == '' || (strpos($email,'@') == false)){
+            $emailflag = -1;
+        }else{
+            if(!($this->emailZadovoljava($email))){
+                $emailString = "Vec postoji nalog sa e-mail adresom koju ste zeleli da postavite.";
+                $emailflag = -1; // ako neko vec ima mejl u koji zelim oda promenimo
+            }
+            else $emailflag = 0;
+        }
+
+        if($opis == ''){
+            $opisflag = -1;
+        } else $opisflag = 0;
 
         if(strlen($telefon) >= 9 && strlen($telefon) <=10 && $telefon[0] == 0 && $telefon[1] == 6 && ( in_array($telefon[2], array(0,1,2,3,4,5,6,9)))){
             $phoneflag = 0;
+            for($i = 2; $i < strlen($telefon); $i++){
+                if(!(is_numeric($telefon[$i]))){
+                    $phoneflag = -1;
+                    break;
+                }
+            }
         }
         else{
             $phoneflag = -1;
@@ -159,16 +241,27 @@ class ProfileController
         }
 
 
-        if($phoneflag == 0 && $passflag == 0) {
-            $profesor = Profesor::odUsera(Auth::user());
+        if($phoneflag == 0 && $passflag == 0 && $emailflag == 0 && $opisflag == 0) {
+            $user = Auth::user();
+
+            if($user->email != $email) {
+                $this->sendConfirmationForNewEmail($user, $email);
+                $emailString = "Promenu email-a morate potvrditi na novom mejlu koji ste naveli da zelite da koristite.";
+            }
+
+
+
+
+            $profesor = Profesor::odUsera($user);
             $profesor->telefon = $telefon;
+            $profesor->Opis = $opis;
             $profesor->save();
 
             if($newpass!='') {
-                Auth::user()->password = bcrypt($newpass);
-                Auth::user()->save();
+                $user->password = bcrypt($newpass);
+                $user->save();
             }
-            return "Promene su uspesno izvrsene";
+            return "Promene su uspesno izvrsene. " . $emailString;
         }
         else if($phoneflag == -1){
             return "Promene nisu izvrsene. Broj telefona nije validan.";
@@ -176,6 +269,25 @@ class ProfileController
         else if($passflag == -1){
             return "Promene nisu izvrsene. Passwordi se ne podudaraju";
         }
+        else if($emailflag == -1){
+            return "Email je nevalidan. Zahtev nije ispunjen. " . $emailString;
+        }
+        else if($opisflag == -1){
+            return "Opis ne sme biti prazan. Zahtev nije ispunjen.";
+        }
+
+
     }
 
+
+    public function validProfileSettings(){
+        $user = Auth::user();
+        $profesor = Profesor::odUsera($user);
+        $data = [
+            'email' => $user->email,
+            'telefon' => $profesor->telefon,
+            'opis' => $profesor->Opis
+        ];
+        return $data;
+    }
 }

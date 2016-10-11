@@ -10,9 +10,10 @@ use DB;
 use Illuminate\Database\Eloquent\Model;
 class Predaje extends Model{
     protected $table='predaje'; //
+    protected $primaryKey='sifPredaje';
     protected $fillable=['sifProfesora','sifPredmeta','Opis_oglasa'];
 
-    public static function addNewRow($sifProfesora,$sifPredmeta,$Opis_oglasa)
+    public static function addNewRow($sifProfesora,$sifPredmeta,$Opis_oglasa, $SMScheck)
     {
         $predaje = Predaje::where('sifProfesora', $sifProfesora)->where('sifPredmeta', $sifPredmeta)->first();
         $returnMessage="";
@@ -23,6 +24,7 @@ class Predaje extends Model{
                 'sifPredmeta' => $sifPredmeta,
                 'Opis_oglasa' => $Opis_oglasa
             ]);
+            $predaje->SMS = $SMScheck;
             $predaje->save();
 
             $returnMessage = "<script> alert('Uspešno ste dodali oglas! \\n Možete ga izmeniti u rubrici \"Moji predmeti\"'); </script>";
@@ -38,8 +40,8 @@ class Predaje extends Model{
         Predaje::where('sifProfesora', $sifProfesora)->where('sifPredmeta', $sifPredmeta)->delete();
     }
 
-    public static function updateRow($sifProfesora, $sifPredmeta, $opis){
-        $predaje = Predaje::where('sifProfesora', $sifProfesora)->where('sifPredmeta', $sifPredmeta)->update(array('Opis_oglasa' => $opis));
+    public static function updateRow($sifProfesora, $sifPredmeta, $opis,$SMScheck){
+        $predaje = Predaje::where('sifProfesora', $sifProfesora)->where('sifPredmeta', $sifPredmeta)->update(array('Opis_oglasa' => $opis,'SMS' => $SMScheck));
     }
 
     public function getProfesor(){

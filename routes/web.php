@@ -21,9 +21,7 @@ Route::get('predaja-oglasa',function () {
     return view('predaja-oglasa');
 })->middleware('auth');
 
-Route::get('settings',function () {
-    return view('profile-settings');
-})->middleware('auth');
+Route::get('settings', 'ProfileController@showSettings');
 
 Route::get('help',function () {
     return view('help');
@@ -35,9 +33,8 @@ Route::get('getSubjectList', 'DropdownController@predmeti');
 Route::get('getDepartmentList','DropdownController@smerovi');
 Route::post('predaja-oglasa','ProfileController@addNewSubject');
 
-Route::get('obrisi-oglas','ProfileController@deleteSubject');
-Route::get('azuriraj-oglas','ProfileController@updateSubjectInfo');
-
+Route::post('obrisi-oglas','ProfileController@deleteSubject');
+Route::post('/azuriraj-oglas','ProfileController@updateSubjectInfo');
 
 Route::get('pretraga',['as' => 'pretraga', 'uses' =>'SearchController@search']);
 
@@ -80,3 +77,17 @@ Route::post('/sendGenericRequest','RequestController@saveGenericRequest');
 Route::get('/javni-zahtevi','RequestController@publicRequests');
 
 Route::post('/acceptPublicRequest','RequestController@acceptPublicRequest');
+
+Route::get('request/verify/public/{confirmation_ocde}','ConfirmationController@confirmPublicRequest');
+
+Route::post('/posaljiAnketu', 'RatingController@posaljiAnketu');
+
+Route::get('/zahtev/oceni/{javni}/{sifZahteva}/{sifOceni}/{confirmation_code}','RatingController@rate');
+
+Route::post('/zabeleziPreporuku','RatingController@zabeleziPreporuku');
+
+Route::post('/zavrsiAnketu','RatingController@zavrsiAnketu');
+
+Route::get('/promena-mejla/potvrdi/{newEmail}/{confirmation_code}', 'ConfirmationController@confirmNewEmail');
+
+Route::get('/validProfileSettings','ProfileController@validProfileSettings');

@@ -18,6 +18,7 @@
 <body>
     <script type="text/javascript">
         var sifZahteva = '{{$zahtev->sifZahteva}}'
+        var javniZahtev = '{{$javniZahtev}}'
     </script>
     </br>
     </br>

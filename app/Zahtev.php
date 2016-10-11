@@ -35,7 +35,23 @@ class Zahtev extends Model
         ")[0];
     }
 
+
+
     public function getPredaje(){
         return Predaje::where('sifPredaje',$this->sifPredaje)->first();
+    }
+
+    public function vecPrihvacenZaPredmetIProfesora()
+    {
+        return Zahtev::where('prihvacen', 1)->where('sifPredaje', $this->sifPredaje)->where('email', $this->email)->where('sifZahteva','<>',$this->sifZahteva)->first();
+    }
+
+    public function proveriZahtev(){
+        $predaje = Predaje::select('sifPredmeta','sifProfesora')->where('sifPredaje',$this->sifPredaje)->first();
+
+        if( ZahtevBezProfesora::where('sifProfesora',$predaje->sifProfesora)->where('sifPredmeta',$predaje->sifPredmeta)->where('email', $this->email)->first() != null){
+            return 1;
+        }
+        else return 0;
     }
 }

@@ -24,7 +24,7 @@
             <strong>Neophodne informacije, kako bi cas bio sto lakse realizovan, mozete dobiti na sledecoj adresi: </strong>
 
             <br>
-            <a href="{{URL::to('/request/verify')}}/{{$key}}">{{URL::to('/request/verify')}}/{{$key}}</a>
+            <a href="{{URL::to('/request/verify/public')}}/{{$key}}">{{URL::to('/request/verify/public')}}/{{$key}}</a>
             <br>
             </p>
         </div>

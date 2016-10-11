@@ -10,10 +10,9 @@ $(document).on('click', '#FAKULTET li a',function(){
     $("#department").removeClass('disabled');
 
     //meni dobija naziv izabrane stavke
-    $(this).parents(".dropdown").children(".btn").html($(this).text()+' <span class="caret"></span>');
+    $(this).parents(".dropdown").children(".btn").html('<strong>' + $(this).text() + '</strong>'+' <span class="caret"></span>');
 
     $.get('getDepartmentList',"faks=" + $(this).text(), function (data) {
-
         var model = $('#lista-smerova');
         model.empty();
 
@@ -33,7 +32,7 @@ $(document).on('click', '#SMER li a', function(){
 
 
     //meni dobija naziv izabrane stavke
-    $(this).parents(".dropdown").children(".btn").html($(this).text()+' <span class="caret"></span>');
+    $(this).parents(".dropdown").children(".btn").html('<strong>' + $(this).text() + '</strong>' + ' <span class="caret"></span>');
 
     $.get('getYearList',"faks=" + $("#faculty").text() + "&smer=" + $(this).text() ,function (data) {
 
@@ -55,7 +54,7 @@ $(document).on('click', '#GODINA li a', function() {
     $("#pretrazi").addClass('disabled');
     $("#subject").removeClass('disabled');
     //meni dobija naziv izabrane stavke
-    $(this).parents(".dropdown").children(".btn").html($(this).text()+' <span class="caret"></span>');
+    $(this).parents(".dropdown").children(".btn").html('<strong>' + $(this).text() + '</strong>' + ' <span class="caret"></span>');
 
     $.get('getSubjectList',"faks=" + $("#faculty").text() + "&smer=" + $("#department").text()  + "&godina=" + $(this).text(),function (data) {
 
@@ -76,7 +75,7 @@ $(document).on('click', '#GODINA li a', function() {
 $(document).on('click', '#PREDMET li a', function(){
 
     //meni dobija naziv izabrane stavke
-    $(this).parents(".dropdown").children(".btn").html($(this).text()+' <span class="caret"></span>');
+    $(this).parents(".dropdown").children(".btn").html('<strong>' + $(this).text() + '</strong>'+' <span class="caret"></span>');
 
     $("#pretrazi").removeClass('disabled');
 });

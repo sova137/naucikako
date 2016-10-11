@@ -30,7 +30,6 @@ window.onclick = function(event) {
 }
 
 function openContactInfo($userEmail,$userTelephone) {
-
     modal.style.display='block';
 
     $("#korisnikov-email").val($userEmail);

@@ -33,11 +33,11 @@
                                                  <div class="list-group collapse" id="item-{{$k}}-{{$i}}">
                                                      @for(; $j < count($predmeti); $j++)
                                                          @if($predmeti[$j]->s == $smer["s"])
-                                                             <a href="#item_info-{{$k}}-{{$i}}" class="list-group-item" data-toggle="collapse"><i class="glyphicon glyphicon-chevron-right"></i>
+                                                             <a href="#item_info-{{$predmeti[$j]->sifPredaje}}" class="list-group-item" data-toggle="collapse"><i class="glyphicon glyphicon-chevron-right"></i>
                                                                  {{ $predmeti[$j]->p }}
                                                              </a>
 
-                                                             <div class="list-group collapse" id="item_info-{{$k}}-{{$i}}">
+                                                             <div class="list-group collapse" id="item_info-{{$predmeti[$j]->sifPredaje}}">
                                                                  <br>
 
 
@@ -66,8 +66,11 @@
                                                                              <div class="col-xs-3">
                                                                                  <input name="predmet-text-input" class="form-control" type="text" value="{{ $predmeti[$j]->p }}" id="predmet-text-input" readonly>
                                                                              </div>
-                                                                             <label class="checkbox-inline col-xs-3 col-xs-offset-1"><input type="checkbox" id="SMS-obavestenje" value=""><b>Obavesti me SMS porukom</b></label>
-                                                                             <label id="predaja-oglasa-br-telefona" class="col-xs-3 phone-number" style="display: none"><b>Broj telefona*</b><input class="form-control" name="phonenumber" placeholder="+381 06" type="phone number" value="+381 06" /></label>
+                                                                             @if(\App\Predaje::find($predmeti[$j]->sifPredaje)->SMS == 1)
+                                                                             <label class="checkbox-inline col-xs-2 col-xs-offset-1"><input type="checkbox" name="SMScheck" id="SMScheck-{{$predmeti[$j]->sifPredaje}}" checked><b>Obavesti me SMS porukom o pristiglim zahtevima</b></label>
+                                                                             @else
+                                                                                 <label class="checkbox-inline col-xs-2 col-xs-offset-1"><input type="checkbox" name="SMScheck" id="SMScheck-{{$predmeti[$j]->sifPredaje}}" ><b>Obavesti me SMS porukom o pristiglim zahtevima</b></label>
+                                                                             @endif
                                                                              <!--dodaj inline fju za broj telefona-->
                                                                          </div>
                                                                          </br>
@@ -80,7 +83,7 @@
                                                                          <div class="form-group row">
 
                                                                              <div class="list-group-item col-xs-3 col-xs-offset-2">
-                                                                                 <button href='#' id="sacuvaj-izmene-oglasa-btn" class="btn btn-sm btn-primary col-xs-12" onclick="updateSubjectOffer('{{$predmeti[$j]->sifPredm}}',$('#predaja-opis-oglasa-{{$k}}-{{$i}}').val())"><b align="center">Sačuvaj izmene</b></button>
+                                                                                 <button href='#' id="sacuvaj-izmene-oglasa-btn" class="btn btn-sm btn-primary col-xs-12" onclick="updateSubjectOffer('{{$predmeti[$j]->sifPredm}}',$('#predaja-opis-oglasa-{{$k}}-{{$i}}').val(),'{{$predmeti[$j]->sifPredaje}}')"><b align="center">Sačuvaj izmene</b></button>
                                                                              </div>
 
                                                                              <div class="list-group-item col-xs-3 col-xs-offset-2">

@@ -11,6 +11,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use DB;
+use App\Predaje;
 class ZahtevBezProfesora extends Model
 {
     protected $table='zahtev_bez_profesora';
@@ -42,5 +43,18 @@ class ZahtevBezProfesora extends Model
             and s.sifFakulteta = f.sifFakulteta
             and u.id = pro.user_id
         ")[0];
+    }
+
+    public function vecPrihvacenZaPredmetIProfesora(){
+        return ZahtevBezProfesora::where('prihvacen', 1)->where('sifProfesora', $this->sifProfesora)->where('sifPredmeta',$this->sifPredmeta)->where('email', $this->email)->where('sifZahteva','<>',$this->sifZahteva)->first();
+    }
+
+    public function proveriZahtev(){
+        $predaje = Predaje::select('sifPredaje')->where('sifProfesora',$this->sifProfesora)->where('sifPredmeta',$this->sifPredmeta)->first();
+        if($predaje == null) return 0;
+        if( Zahtev::where('sifPredaje',$predaje->sifPredaje)->where('email', $this->email)->first() != null){
+            return 1;
+        }
+        else return 0;
     }
 }

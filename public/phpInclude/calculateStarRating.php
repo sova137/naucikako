@@ -7,8 +7,8 @@
  */
 
 if($profesor->brojCasova > 0) {
-    $odnos = $profesor->brojPreporuka / (floatval($profesor->brojCasova));
-    echo round(2*$odnos*5)/2;
+    $odnos = $profesor->zvezdice / $profesor->brojKlijenata;
+    echo round(2*$odnos)/2;
 }
 else{
     echo 0;

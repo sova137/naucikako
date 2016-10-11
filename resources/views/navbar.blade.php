@@ -1,26 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="<?php echo csrf_token() ?>">
 
 
-    <link rel="stylesheet" href="css/bootstrap-social.css" />
-    <link rel="stylesheet" href="font-awesome-4.6.3/css/font-awesome.min.css">
-
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
-    <script>
-        window.Laravel = <?php echo json_encode([
-                'csrfToken' => csrf_token(),
-        ]); ?>
-    </script>
-</head>
-<body>
-
-<nav class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation" >
+<nav class="navbar navbar-default navbar-inverse" role="navigation">
 
     <div class="container-fluid">
         <div class="row">
@@ -36,15 +16,17 @@
 
 
                 <div class="nav navbar-nav navbar-right col-xs-4">
-                    <div class="col-xs-3"></div>
-                    <div class="col-xs-3"></div>
+                    <div class="col-xs-1"></div>
+
 
                <?php if(Auth::guest()) : ?>
-                    <!--<label id="opis">Drzis casove iz nekog predmeta?</label>-->
-                    <a href="/login"><div class="btn btn-danger"  id="login-btn" ><b>Prijavi se</b></div></a>
+                    <label id="opis" class="col-xs-6" style="margin-top: 10px; text-align: right; font-style: italic">Drzis casove iz nekog predmeta?</label>
+                    <a href="/login"><div class="btn btn-danger col-xs-2"  id="login-btn" ><b>Prijavi se</b></div></a>
 
-                    <a href="/register"><div class="btn btn-danger" id="signup-btn" ><b>Registruj se</b></div></a>'
+                    <a href="/register"><div class="btn btn-danger col-xs-2" style="margin-left: 5px" id="signup-btn" ><b>Registruj se</b></div></a>'
                     <?php else : ?>
+                    <div class="col-xs-2"></div>
+                    <div class="col-xs-2"></div>
                     <a href="#">
                         <div class="dropdown">
                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -67,7 +49,7 @@
                                    <li>
                                        <a href="/odbijeni-zahtevi">Odbijeni zahtevi</a>
                                    </li>
-                                   <li>
+								   <li>
                                        <a href="/javni-zahtevi">Javni zahtevi</a>
                                    </li>
                                    <li>
@@ -103,24 +85,5 @@
     </div>
 </nav>
 
-<style>
-    .container-fluid {
-        height: 10px;
-    }
+<link rel="stylesheet" href="/css/navbar.css"  />
 
-    #opis{
-        color:white;
-    }
-    #login-btn{
-        padding: 10px;
-        margin-top: 2px;
-    }
-
-    #signup-btn{
-        padding: 10px;
-        margin-top: 2px;
-    }
-
-</style>
-</body>
-</html>

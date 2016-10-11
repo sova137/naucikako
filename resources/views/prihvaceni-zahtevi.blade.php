@@ -17,7 +17,7 @@
                                 <div class = "col-xs-12">
                                     <div href = "#" class = "thumbnail">
                                         <div class="articles">
-                                            <div id="sifZahteva-{{$zahtev->sifZahteva}}" class="article current">
+                                            <div id="sifZahteva-{{$zahtev->sifZaht}}" class="article current">
                                                 <div class="item row list-group-item">
                                                     <div class="col-xs-4">
                                                         <p><i class="glyphicon glyphicon-chevron-right"></i> Zahtev #{{$i}} </p>
@@ -27,7 +27,7 @@
                                                     </div>
                                                     <div class="col-xs-5">
                                                         <p class="pubdate">
-                                                            {{$zahtev->created_at}}
+                                                            {{$zahtev->vreme}}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -87,15 +87,21 @@
                                                             <p align="center"><strong>Podaci o posiljaocu bice dostupni nakon sto on verifikuje zahtev za cas.</strong></p>
                                                             <button href='#' type="button" id="podaci-o-posiljaocu" class="btn btn-danger col-xs-12 disabled" onclick="openContactInfo($zahtev)"><b align="center">Pogledaj podatke o posiljaocu</b></button>
                                                             <br>
+                                                            @if(is_null($zahtev->ocenjen))
                                                             <p align="center"><strong>Nakon odrzanog casa posaljite uceniku anketu kako bi Vas preporucio buducim ucenicima.</strong></p>
                                                             <button href='#' type="button" id="posalji-anketu" class="btn btn-danger col-xs-12 disabled" onclick="" ><b align="center">Posalji anketu</b></button>
+                                                            @endif
                                                         @else
                                                             <p align="center"><strong>Posiljalac je verifikovao svoj zahtev, mozete pristupiti njegovim podacima.</strong></p>
 
                                                             <button href='#' type="button" id="podaci-o-posiljaocu" class="btn btn-info col-xs-12" onclick="openContactInfo('{{$zahtev->email}}','{{$zahtev->telefon}}')"><b align="center">Pogledaj podatke o posiljaocu</b></button>
                                                             <br>
+                                                            @if(is_null($zahtev->ocenjen))
+                                                             <div id="mesto-anketa">
                                                             <p align="center"><strong>Nakon odrzanog casa posaljite uceniku anketu kako bi Vas preporucio buducim ucenicima.</strong></p>
-                                                            <button href='#' type="button" id="posalji-anketu" class="btn btn-success col-xs-12" onclick="" ><b align="center">Posalji anketu</b></button>
+                                                            <button href='#' type="button" id="posalji-anketu" class="btn btn-success col-xs-12" onclick="posaljiAnketu('{{json_encode($zahtev)}}')" ><b align="center">Posalji anketu</b></button>
+                                                            </div>
+                                                                 @endif
                                                             <?php include('../resources/views/dialog-box-podaci-ucenika.blade.php');?>
                                                         @endif
                                                     </div>
@@ -121,6 +127,7 @@
 
     <link href="/css/articles.css" rel="stylesheet">
     <script src="/js/avatar_upload.js"></script>
+    <script src="/js/anketa.js"></script>
     <script src="/js/collapsableList.js"></script>
     <script src="/js/articles.js"></script>>
 @endsection

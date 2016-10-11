@@ -56,7 +56,7 @@
                             <div class="form-group">
                                 <label class="col-lg-3 control-label">Email:</label>
                                 <div class="col-lg-8">
-                                    <input class="form-control" type="text" value="{{ Auth::user()->email }}" readonly>
+                                    <input class="form-control" type="text" value="{{ Auth::user()->email }}" id="email-settings">
                                 </div>
                             </div>
 
@@ -80,13 +80,21 @@
                                     <input class="form-control" id="confnewpass" type="password" value="">
                                 </div>
                             </div>
+
+                            <div class="form-group">
+                                <label class="col-md-3 control-label"><b>Izmeni opis: </b></label>
+                                <div class="col-md-8">
+                                <textarea rows="5" id="opis-settings" class="form-control" placeholder="Vase zanimanje..">{{ $profesor->Opis }}</textarea>
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label class="col-md-3 control-label"></label>
                                 <div class="col-md-8">
 
                                     <input id="promeni" type="button" class="btn btn-primary" value="Sačuvaj promene">
                                     <span></span>
-                                    <input type="reset" class="btn btn-default" value="Otkaži">
+                                    <input type="reset" class="btn btn-default" id="otkazi" value="Otkaži">
                                 </div>
                             </div>
                         </form>

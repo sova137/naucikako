@@ -2,35 +2,50 @@
 
 @section('search_results')
 
-<div class="jumbotron" id="lista-oglasa">
+<div class="jumbotron" id="lista-oglasa" style="background-color: rgba(0,0,0,0.4); /* Black w/ opacity */">
+
         @if(!empty($profesori))
         @foreach ($profesori as $profesor)
+            <div class="thumbnail" style="background-color: steelblue; border-color: #2d4373; border-radius: 70px;">
             <div class="row">
 
                 <div class="col-xs-4 col-md-2">
-                    <a href="profile/{{$profesor->sifProfesora}}"><img class="img-responsive img-circle" src="<?php include("phpInclude/searchAvatar.php");?>" alt="Responsive image" ></a>
+                    <a href="profile/{{$profesor->sifProfesora}}"><img class="img-responsive img-circle" src="<?php include("phpInclude/searchAvatar.php");?>" align="center" alt="Responsive image" ></a>
                 </div>
 
                 <div class="col-xs-8 col-md-4">
                     <br/>
                     <br/>
-                    <a href="profile/{{$profesor->sifProfesora}}"><p  id="ime-i-prezime-{{$profesor->sifProfesora}}" style="margin:0"><?php include("phpInclude/firstAndLastName.php");?></p></a>
-                    <p id="zanimanje">aa</p>
-                    <p id="opis-oglasa">{{ $profesor->Opis_oglasa }}</p>
+                    <a href="profile/{{$profesor->sifProfesora}}" style="color:white"><p  id="ime-i-prezime-{{$profesor->sifProfesora}}" style="margin:0"><?php include("phpInclude/firstAndLastName.php");?></p></a>
+                    <p id="zanimanje" style="color:white">{{ $profesor->Opis}}</p>
+                    <p id="opis-oglasa" style="color:white">{{ $profesor->Opis_oglasa }}</p>
                 </div>
 
                 <div class="col-xs-12 col-md-4">
                     <br/>
-                    <br/>
+
                     <input class="inp-3"  name="input-3" value="<?php include("phpInclude/calculateStarRating.php")?>" class="rating-loading">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                             <button type="button" class="btn btn-labeled btn-primary no-click">
+                            <i class="glyphicon glyphicon-thumbs-up" ></i> <strong>{{$profesor->preporuke}}</strong> <em>Preporuka</em></button>
+                        </div>
+                        <div class="col-md-5">
+                            <button class="btn-circle btn-primary btn no-click"><strong>@if($profesor->ukCasova > 0)<?php include('phpInclude/procenatPreporuka.php')?>%@else 0% @endif</strong></button>
+                        </div>
                 </div>
 
+
+                </div>
                 <div class="col-xs-12 col-md-2" >
                     <br/>
                     <br/>
-                    <a  href="#" onclick="kontaktirajOnClick(document.getElementById('ime-i-prezime-{{$profesor->sifProfesora}}').innerHTML,'{{ $profesor->sifPredaje }}')" class="btn btn-info btn-lg" id="kontaktiraj-{{$profesor->sifPredaje}}">Kontaktiraj <span class="glyphicon glyphicon-comment"></span></a>
+                    <br/>
+                    <a  href="#" onclick="kontaktirajOnClick(document.getElementById('ime-i-prezime-{{$profesor->sifProfesora}}').innerHTML,'{{ $profesor->sifPredaje }}')" class="btn btn-success" id="kontaktiraj-{{$profesor->sifPredaje}}"><strong>Kontaktiraj </strong><span class="glyphicon glyphicon-comment"></span></a>
                 </div>
-            </div>
+                </div>
+    </div>
         @endforeach
     @else
             <strong>Potrebna ti je pomoc iz ovog predmeta, a trenutno nema profesora?<br>Obavesti nas kako bismo rešili tvoj problem!<br></strong>

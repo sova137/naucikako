@@ -85,5 +85,29 @@ ul{
 
 #kontaktiraj{
     margin-top:10px;
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.75);
 }
 
+.btn-label {position: relative; display: inline-block; background: rgba(0,0,0,0.15); border-radius: 3px 0 0 3px; left:-20px;  }
+.btn-labeled{
+    width:100%;
+}
+.no-click{
+    pointer-events:none;
+}
+
+.btn-circle, .btn-circle-3d{
+    border-radius: 50% !important;
+}
+
+.btn-primary.btn-circle{
+    -webkit-box-shadow: 0px 0px 3px 1px #245580;
+    -moz-box-shadow:    0px 0px 3px 1px #245580;
+    box-shadow:         0px 0px 3px 1px #245580;
+}
+
+.btn{
+    -webkit-box-shadow: 0px 0px 3px 1px #245580;
+    -moz-box-shadow:    0px 0px 3px 1px #245580;
+    box-shadow:         0px 0px 3px 1px #245580;
+}

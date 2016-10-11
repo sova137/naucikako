@@ -12,6 +12,7 @@ use App\Profesor;
 use Illuminate\Support\Facades\Auth;
 use App\Predaje;
 use App\ZahtevBezProfesora;
+use App\Oceni;
 class RequestController extends Controller
 {
 
@@ -34,8 +35,17 @@ class RequestController extends Controller
         if($opis == ''){
             return "Opis ne sme biti prazan. Zahtev nije poslat.";
         }
+
         if(!(strlen($tel) >= 9 && strlen($tel) <=10 && $tel[0] == 0 && $tel[1] == 6 && ( in_array($tel[2], array(0,1,2,3,4,5,6,9))))){
-            $tel = null; // ako omasi telefon uspesan je zahtev ali u bazi pamtimo null
+            $tel = null;
+        }
+        else{
+            for($i = 2; $i < strlen($tel); $i++){
+                if(!(is_numeric($tel[$i]))){
+                    $tel = null;
+                    break;
+                }
+            }
         }
 
         $zahtev = Zahtev::create([
@@ -67,7 +77,7 @@ class RequestController extends Controller
         });
     }
 
-    private function sendConfirmationMail($podaci, $zahtev, $confirmation_code = null){
+    private function sendConfirmationMail($podaci, $zahtev, $confirmation_code, $javniZahtev){
         $data =
             [
                 'key' => $confirmation_code,
@@ -79,10 +89,22 @@ class RequestController extends Controller
                 'prezime' => $podaci->prezime
             ];
 
-        Mail::queue('confirmation', $data, function($message) use ($data,$zahtev){ $message->to($zahtev->email)->
-           subject("Odgovor na zahtev : " . $data['faks'] . "->" . $data['smer'] .  '->' . $data['godina'] . '->' . $data['predmet'] . ' | ' . $data['ime'] .  ' ' . $data['prezime'] );
-        });
+        //drugaciji je layout maila za javni i tajni zahtev
+        if(!$javniZahtev) {
+                Mail::queue('confirmation', $data, function ($message) use ($data, $zahtev) {
+                    $message->to("$zahtev->email")->
+                    subject("Odgovor na zahtev : " . $data['faks'] . "->" . $data['smer'] . '->' . $data['godina'] . '->' . $data['predmet'] . ' | ' . $data['ime'] . ' ' . $data['prezime']);
+                });
+        }
+        else{
+            Mail::queue('confirmation-pub-request', $data, function ($message) use ($data, $zahtev) {
+                $message->to($zahtev->email)->
+                subject("Odgovor na zahtev : " . $data['faks'] . "->" . $data['smer'] . '->' . $data['godina'] . '->' . $data['predmet'] . ' | ' . $data['ime'] . ' ' . $data['prezime']);
+            });
+        }
     }
+
+
 
     public function acceptRequest(){
         $sifZahteva = $_POST['sifZahteva'];
@@ -91,11 +113,17 @@ class RequestController extends Controller
         $confirmation_code = hash_hmac('sha256', Str::random(40), config('app.key'));
         $zahtev->confirmation_code = $confirmation_code;
         $zahtev->confirmed = 0;
+
+        if(Oceni::isAlreadyRated($zahtev) == 1){
+            $zahtev->ocenjen = 1;
+        }
+
+
         $zahtev->save();
         $podaci = $zahtev->dohvatiPodatkeZaMejl();
 
         //podaci se u view mogu prebaciti samo kao niz, a tamo se koriste direktnim navodjenjem asocijavitnog kljuca, primer : $ime, $prezime..
-        ($this)->sendConfirmationMail($podaci,$zahtev, $confirmation_code);
+        ($this)->sendConfirmationMail($podaci,$zahtev, $confirmation_code,0);
 
         return "Uspesno ste prihvatili zahtev#" . $zahtev->sifZahteva . "      $podaci->faks -> $podaci->sm -> $podaci->god -> $podaci->pred";
     }
@@ -107,7 +135,7 @@ class RequestController extends Controller
         $zahtev->save();
         $podaci = $zahtev->dohvatiPodatkeZaMejl();
 
-        ($this)->sendConfirmationMail($podaci,$zahtev);
+        ($this)->sendConfirmationMail($podaci,$zahtev, null , 0);
 
         return "Uspesno ste odbili zahtev#" . $zahtev->sifZahteva . "      $podaci->faks -> $podaci->sm -> $podaci->god -> $podaci->pred";
     }
@@ -171,6 +199,7 @@ class RequestController extends Controller
 
     //DODATI ZA NITI
     public function acceptPublicRequest(){
+
         $sifZahteva = $_POST['sifZahteva'];
         $zahtev = ZahtevBezProfesora::find($sifZahteva);
         if($zahtev->prihvacen == 0 )$zahtev->prihvacen = 1;
@@ -182,12 +211,17 @@ class RequestController extends Controller
         $confirmation_code = hash_hmac('sha256', Str::random(40), config('app.key'));
         $zahtev->confirmation_code = $confirmation_code;
         $zahtev->confirmed = 0;
+
+        if(Oceni::isAlreadyRated($zahtev) == 1){
+            $zahtev->ocenjen = 1;
+        }
+
         $zahtev->save();
 
         $podaci = $zahtev->dohvatiPodatkeZaMejl();
 
         //podaci se u view mogu prebaciti samo kao niz, a tamo se koriste direktnim navodjenjem asocijavitnog kljuca, primer : $ime, $prezime..
-        ($this)->sendConfirmationMail($podaci,$zahtev, $confirmation_code);
+        ($this)->sendConfirmationMail($podaci,$zahtev, $confirmation_code, 1);
 
         return "Uspesno ste prihvatili zahtev#" . $zahtev->sifZahteva . "      $podaci->faks -> $podaci->sm -> $podaci->god -> $podaci->pred";
     }

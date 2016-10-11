@@ -8,17 +8,18 @@
 namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-
+use App\Oceni;
+use App\Predaje;
 class Profesor extends Model{
     protected $table='profesor';
     protected $primaryKey='sifProfesora';
     protected $fillable=['user_id'];
     public static function predajuSortirano($predmet){
         return DB::select(
-            "select pro.*,pre.sifPredaje,pre.Opis_oglasa 
+            "select pro.*,pre.sifPredaje,pre.Opis_oglasa, pre.brojPreporuka as preporuke, pre.brojCasova as ukCasova
               from profesor pro, predaje pre
                where pro.sifProfesora=pre.sifProfesora and pre.sifPredmeta = $predmet->sifPredmeta
-               order by brojPreporuka / ( pro.brojCasova*1.0) DESC"
+               order by pre.brojPreporuka DESC"
         );
     }
 
@@ -31,7 +32,7 @@ class Profesor extends Model{
     {
         $sifProfesora = ($this)->sifProfesora;
         return DB::select(
-            "select f.Naziv as f,s.Naziv as s,prd.Naziv as p,pre.Opis_oglasa as o,pre.sifPredmeta as sifPredm
+            "select f.Naziv as f,s.Naziv as s,prd.Naziv as p,pre.Opis_oglasa as o,pre.sifPredmeta as sifPredm, pre.sifPredaje as sifPredaje
               from predmet prd, predaje pre, smer s, fakultet f
                where prd.sifPredmeta=pre.sifPredmeta 
                and s.sifSmera = prd.sifSmera
@@ -68,7 +69,7 @@ class Profesor extends Model{
 
     public function prihvaceniZahtevi(){
         return DB::select("
-            select f.Naziv as faks , s.Naziv as sm, prd.Godina as god, prd.Naziv as prd, z.*
+          ( select f.Naziv as faks , s.Naziv as sm, prd.Godina as god, prd.Naziv as prd, prd.sifPredmeta as sifPredmeta,  z.sifZahteva as sifZaht, z.email as email,z.Opis_zahteva as Opis_zahteva, 0 as javni, z.telefon as telefon, z.confirmed as confirmed, z.ocenjen as ocenjen, z.created_at as vreme
             from zahtev z, predaje pre, fakultet f, smer s,predmet prd
             where z.sifPredaje = pre.sifPredaje
             and pre.sifProfesora = $this->sifProfesora
@@ -76,7 +77,18 @@ class Profesor extends Model{
             and prd.sifSmera = s.sifSmera
             and s.sifFakulteta = f.sifFakulteta
             and z.prihvacen = 1
-            order by z.confirmed, z.created_at DESC
+           )
+            UNION 
+           ( 
+            select f.Naziv as faks , s.Naziv as sm, prd.Godina as god, prd.Naziv as prd, prd.sifPredmeta as sifPredmeta, z.sifZahteva as sifZaht,z.email as email, z.Opis_zahteva as Opis_zahteva, 1 as javni,  z.telefon as telefon, z.confirmed as confirmed, z.ocenjen as ocenjen, z.created_at as vreme
+            from zahtev_bez_profesora z, predaje pre, fakultet f, smer s,predmet prd
+            where z.sifProfesora = $this->sifProfesora
+            and z.sifPredmeta = prd.sifPredmeta
+            and prd.sifSmera = s.sifSmera
+            and s.sifFakulteta = f.sifFakulteta
+            and z.prihvacen = 1
+            )
+            order by confirmed, vreme DESC
         ");
     }
 
@@ -103,4 +115,30 @@ class Profesor extends Model{
     public function getJobDescription($sifPredmeta){
         return Predaje::select('Opis_oglasa')->where('sifProfesora',($this)->sifProfesora)->where('sifPredmeta',$sifPredmeta)->first();
     }
+
+    private function drugePredmeteSKlijentom($zahtev){
+       return Oceni::where('sifProfesora', $this->sifProfesora)->where('email',$zahtev->email)->first();
+    }
+
+    public function dodajCas($email, $sifPredmeta, $javniZahtev,$zahtev){
+        if(Oceni::isAlreadyRated($zahtev) == 0){
+
+            $this->brojCasova++;
+
+            if( $this->drugePredmeteSKlijentom($zahtev) == null){
+                $this->brojKlijenata++;
+            }
+            $this->save();
+
+            if($javniZahtev == 0){
+                $predaje = Predaje::where('sifProfesora',$this->sifProfesora)->where('sifPredmeta',$sifPredmeta)->first();
+
+                $predaje->brojCasova++; // mora da se definise primarni kljuc za tabelu da bi ovo radilo
+
+                $predaje->save();
+            }
+
+        }
+    }
+
 }

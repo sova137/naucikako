@@ -45,4 +45,15 @@ class User extends Authenticatable
     public static function getUser($userId){  //Ova metoda vraca user-a sa zadatim userId-em i poziva se iz profesor.php
         return User::where('id',$userId)->first();
     }
+
+    public static function whereConfirmationCode($confirmation_code){
+        return User::where('email_change_code', $confirmation_code)->first();
+    }
+
+    public static function postojiVecMejl($email,$user){
+        if(User::where('id','<>',$user->id)->where('email',$email)->first() != null){
+            return 1;
+        }
+        else return 0;
+    }
 }

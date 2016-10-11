@@ -26,7 +26,7 @@
     </script>
 </head>
 <body>
-    <nav class="navbar navbar-default navbar-fixed-top">
+    <nav class="navbar navbar-default">
         <div class="container">
             <div class="navbar-header">
 
@@ -62,8 +62,6 @@
                     @else
 
                         <li class="dropdown">
-
-
                              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                  <img id="mini-avatar" class="img-circle" width="35px" height="35px" src="<?php include('phpInclude/printAvatar.php')?>" alt="av" />
                                 {{ Auth::user()->firstname }} <span class="caret"></span>
@@ -84,6 +82,9 @@
                                 </li>
                                 <li>
                                     <a href="/odbijeni-zahtevi">Odbijeni zahtevi</a>
+                                </li>
+                                <li>
+                                    <a href="/javni-zahtevi">Javni zahtevi</a>
                                 </li>
                                 <li>
                                     <a href="/settings">Podešavanje naloga</a>

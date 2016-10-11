@@ -59,7 +59,7 @@
                             <div class="col-xs-3">
                                 <input name="smer-text-input" class="form-control" type="text" value="" id="smer-text-input" readonly>
                             </div>
-                            <label class="col-xs-6 "><b style="color: mediumvioletred">Obaveštenja o pristiglim zahtevima za čas se podrazumevano šalju na Vaš email!</b></label>
+                            <label class="col-xs-6" style="text-align: right"><b style="color: mediumvioletred">Obaveštenja o pristiglim zahtevima za čas se podrazumevano šalju na Vaš email! @if( (\App\Profesor::odUsera(Auth::user()))->telefon == null) <br/><br/> Ukoliko prvi put predajete oglas morate ostaviti i telefon @endif </b></label>
 
                         </div>
 
@@ -68,11 +68,10 @@
                             <div class="col-xs-3">
                                 <input name="godina-text-input" class="form-control" type="text" value="" id="godina-text-input" readonly>
                             </div>
-
+                            <label class="checkbox-inline col-xs-2 col-xs-offset-1"><input type="checkbox" name="SMScheck" id="SMS-obavestenje" value="0"><b>Obavesti me SMS porukom o pristiglim zahtevima</b></label>
                             @if( (\App\Profesor::odUsera(Auth::user()))->telefon == null)
-                            <label class="checkbox-inline col-xs-2 col-xs-offset-1"><input type="checkbox" id="SMS-obavestenje" value=""><b>Obavesti me SMS porukom</b></label>
-                            <label id="predaja-oglasa-br-telefona" class="col-xs-3 phone-number" style="display: none"><b>Broj telefona*</b>
-                               <input  class="form-control" name="phonenumber" value="06" type="phone number" />
+                            <label id="predaja-oglasa-br-telefona" class="col-xs-3 col-xs-offset-3 phone-number"  ><b>Broj telefona*</b>
+                               <input  class="form-control" name="telefon" value="06" type="phone number" />
                             </label>
                              @endif
                         </div>
