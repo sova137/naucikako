@@ -116,6 +116,7 @@
         <script>
                 $(document).on('ready', function(){
                     $('.inp-3').rating({displayOnly: true});
+                    $("html, body").animate({ scrollTop: $('#lista-oglasa').offset().top }, 1000);
                 });
         </script>
 

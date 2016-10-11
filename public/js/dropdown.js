@@ -75,7 +75,7 @@ $(document).on('click', '#GODINA li a', function() {
 $(document).on('click', '#PREDMET li a', function(){
     $("#pretrazi").addClass('disabled');
     //meni dobija naziv izabrane stavke
-    if("#PREDMET:selected" && $(this).text() != '')$(this).parents(".dropdown").children(".btn").html('<strong>' + $(this).text() + '</strong>'+' <span class="caret"></span>');
+    if("#PREDMET:selected")$(this).parents(".dropdown").children(".btn").html('<strong>' + $(this).text() + '</strong>'+' <span class="caret"></span>');
 
     if($(this).text() != '')$("#pretrazi").removeClass('disabled');
 });

@@ -6,7 +6,7 @@
 
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-    <?php header( "refresh:4;url=/login" ); ?>
+    <?php header( "refresh:2;url=/login" ); ?>
 </head>
 <body>
 

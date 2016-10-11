@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ 'NAUCI KAKO' }}</title>
+    <title>Nauči Kako</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> <!-- ne zaboravi jQuery -->
     <!-- Styles -->
     <link href="/css/collapsableList.css" rel="stylesheet">

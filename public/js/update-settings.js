@@ -39,3 +39,8 @@ $(document).on('click', '#otkazi',function() {
         printValidSettings(data);
     });
 });
+
+
+$(document).on('ready', function(){
+    $("html, body").animate({ scrollTop: $('#container-settings').offset().top }, 1000);
+});

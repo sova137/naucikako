@@ -2,10 +2,10 @@
 
 @section('content')
 
-    <body>
 
 
-    <div class="container">
+
+    <div class="container" id="container-settings">
         <div class = "col-xs-12">
             <div href = "#" class = "thumbnail" >
                 <h1>Podesavanje naloga</h1>
@@ -120,5 +120,5 @@
             padding:5px;
         }
     </style>
-    </body>
+
 @stop
