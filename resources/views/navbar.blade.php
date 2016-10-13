@@ -1,6 +1,6 @@
 
 
-    <nav class="navbar navbar-inverse">
+    <nav class="navbar  navbar-inverse">
     <div class="container-fullwidth">
         <div class="navbar-header">
 
@@ -14,7 +14,7 @@
 
             <!-- Branding Image -->
 
-            <a id="siteSignature" class="navbar-brand" href="/" style="margin-top: 10%"><b>NAUCI KAKO</b></a>
+            <a id="siteSignature" class="navbar-brand" href="/" ><b>NAUCI KAKO</b></a>
         </div>
 
         <div class="collapse navbar-collapse" id="app-navbar-collapse">
@@ -27,11 +27,11 @@
             <ul class="nav navbar-nav navbar-right">
 
                 <?php if(Auth::guest()) : ?>
-                    <li><label id="opis"  style="margin-top: 13%; text-align: right; font-style: italic">Drzis casove iz nekog predmeta?</label></li>
+                    <li><label id="opis"  style="margin-top: 9%; text-align: right; font-style: italic">Drzis casove iz nekog predmeta?</label></li>
 
-                    <li><a href="/login"><div class="btn btn-danger"  id="login-btn"><b>Prijavi se</b></div></a></li>
+                    <li><a class="patka" href="/login"><div class="btn btn-danger"  id="login-btn"><b>Prijavi se</b></div></a></li>
 
-                    <li><a href="/register"><div class="btn btn-danger "  id="signup-btn" ><b>Registruj se</b></div></a></li>
+                    <li><a class="patka" href="/register"><div class="btn btn-danger "  id="signup-btn" ><b>Registruj se</b></div></a></li>
                 <?php else : ?>
 
                     <li class="dropdown">
