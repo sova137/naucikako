@@ -33,6 +33,7 @@
                     <div id="CV" class="col-xs-4">
                         <h5> <strong>Nešto o profesoru: </strong></h5>{{$profesor->Opis}}
                     </div>
+
                 </div>
 
 
@@ -43,12 +44,17 @@
                         <strong>Svi predmeti koje drzi profesor : </strong>
                     </div>
 
-                    <div id="horizontalScrollBar" class="col-xs-4 col-xs-offset-2" >
+                    <div id="horizontalScrollBar" class="col-xs-6 " >
                         <div class="btn-group" role="group" >
-                            @for($i=0;$i<count($predmeti);$i++)
+                            @for($i=0,$j=0;$j<30;$j++)
                                 <button type="button" class="btn btn-default" href="#" onclick="showSubjectDescription('{{$profesor->sifProfesora}}','{{$predmeti[$i]->sifPredmeta}}')" >{{$predmeti[$i]->Naziv}}</button>
                             @endfor
                         </div>
+                    </div>
+
+
+                    <div class="col-xs-offset-1 col-xs-4">
+                        <textarea rows="5"  id="subjectDescription" class="form-control" placeholder="Opis predmeta.." readonly></textarea>
                     </div>
                 </div>
 
@@ -61,9 +67,13 @@
                         <input class="inp-3" name="input-3" value="<?php include("phpInclude/calculateStarRating.php")?>" class="rating-loading" >
                     </div>
                     </br>
-                     <div  class="col-xs-4">
-                    <button type="button" class="btn btn-labeled btn-success no-click" style=".no-click{pointer-events: none;}">
-                        <span class="btn-label"><i class="glyphicon glyphicon-thumbs-up"></i> 15</span><em>Preporuka</em></button>
+                    </br>
+                    </br>
+                    <div class="row">
+                     <div  class="col-xs-4 col-xs-offset-3">
+                        <button type="button" class="btn btn-labeled btn-success no-click" style=".no-click{pointer-events: none;}">
+                         <i class="glyphicon glyphicon-thumbs-up" ></i> <strong>{{$profesor->brojPreporuka}}</strong> <em>Preporuka</em></button>
+                    </div>
                     </div>
                     </br>
                     </br>
