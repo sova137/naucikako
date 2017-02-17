@@ -88,3 +88,16 @@ Route::post('/zavrsiAnketu','RatingController@zavrsiAnketu');
 Route::get('/promena-mejla/potvrdi/{newEmail}/{confirmation_code}', 'ConfirmationController@confirmNewEmail');
 
 Route::get('/validProfileSettings','ProfileController@validProfileSettings');
+
+Route::get('/audio','AudioController@showAudioSubjects');
+
+Route::get('/audio/{nazivSmera}/{godina}/{nazivPredmeta}','AudioController@showAudioSubjectMenu');
+
+Route::get('/audioSubject/selectYear','AudioController@getYearClasses');
+
+Route::get('/audio/{nazivSmera}/{godina}/{nazivPredmeta}/{vrsta}/{skolskaGodina}/{brojDvocasa}/{brojCasa}','AudioController@showAudioPlayer');
+
+Route::get('/getAudioFile', 'AudioController@getAudioFile');
+
+Route::get('/getPlaybackName', 'AudioController@getPlaybackName');
+
