@@ -30,8 +30,17 @@ var buffer;
 var offset = -1000;
 var playPauseOffset = - 1000;
 var playPauseClicked = false;
+var nsource = null;
+var myAudio = null;
 
 function goToPart(partSize){
+	var nextTime = partSize * durationTime;
+	myAudio.currentTime = nextTime;
+	if(playPauseClicked){
+		draw(0);
+	}
+
+	/*
 	if(playPauseClicked){
 		playPauseOffset = partSize *(buffer.duration);
 		startTime = audioContext.currentTime - playPauseOffset;
@@ -41,9 +50,15 @@ function goToPart(partSize){
 		offset = partSize * (buffer.duration);
 		audioBufferSourceNode.stop();
 	}
+	*/
 }
 
 function movePlayback(seconds){
+	myAudio.currentTime = myAudio.currentTime + seconds;
+	if(playPauseClicked){
+		draw(0);
+	}
+	/*
 	if(playPauseClicked){
 		if (seconds < 0) {
 			playPauseOffset = Math.max(0, playPauseOffset + seconds);
@@ -63,10 +78,25 @@ function movePlayback(seconds){
 		}
 		audioBufferSourceNode.stop();
 	}
+	*/
 }
 
 //Play/Pause dugme
 function playPause(checkBox){
+	if(checkBox.checked){
+		playPauseClicked = true;
+		myAudio.pause();
+		nsource.disconnect();
+		audioPlaying = false;
+	}
+	else{
+		playPauseClicked = false;
+		audioPlaying = true;
+		nsource.connect(analyser);
+		myAudio.play();
+		draw(0);
+	}
+	/*
 	if(checkBox.checked){
 		playPauseClicked = true;
         audioBufferSourceNode.disconnect();
@@ -91,6 +121,7 @@ function playPause(checkBox){
 		//audioBufferSourceNode.connect(analyser);
 		//analyser.connect(audioGainNode);
 	}
+	*/
 }
 
 function enableCommands(){
@@ -151,13 +182,12 @@ function loadSound(){
     request.send();
 }
 
+window.addEventListener('load', function(e) {
 
-window.onload = function()
-{
 	console && console.log("%cHTML5 Web Audio API Showcase\n%cA Fancy HTML5 Audio Visualizer based on Web Audio API\nCopyright 2015 NIPE-SYSTEMS\nFork this on GitHub: https://github.com/NIPE-SYSTEMS/html5-web-audio-showcase", "font-size: 1.5em; font-weight: bold;", "font-size: 1em;");
-    $('html, body').animate({
-        scrollTop: $('#chooser').height()
-    }, 'slow');
+	$('html, body').animate({
+		scrollTop: $('#chooser').height()
+	}, 'slow');
 
 	$('#h1-slider').slider({
 		range: "min",
@@ -165,7 +195,7 @@ window.onload = function()
 		animate: true,
 		min:0,
 		max: 100,
-        disabled: true,
+		disabled: true,
 		slide: function( event, ui ) {
 			volume = ui.value/100;
 			if(audioGainNode != null)
@@ -186,20 +216,20 @@ window.onload = function()
 
 	try
 	{
-		audioContext = new AudioContext();
+		audioContext = new webkitAudioContext();
 	}
 	catch(error)
 	{
 		console.error(error);
 	}
-    /*
-	audioInput = document.getElementById("chooser-input");
-	audioInput.onchange = cbInputChange;
+	/*
+	 audioInput = document.getElementById("chooser-input");
+	 audioInput.onchange = cbInputChange;
 
-	playButton = document.getElementById("chooser-button");
-	playButton.onclick = cbButtonClick;
-	disableButton();
-*/
+	 playButton = document.getElementById("chooser-button");
+	 playButton.onclick = cbButtonClick;
+	 disableButton();
+	 */
 	canvas = document.getElementById("scene-canvas");
 	ctx = canvas.getContext("2d");
 
@@ -216,11 +246,11 @@ window.onload = function()
 		canvas.attachEvent("onmousewheel", cbCanvasScroll);
 	}
 
-	 analyser = audioContext.createAnalyser();
-	 audioGainNode = audioContext.createGain();
+	analyser = audioContext.createAnalyser();
+	audioGainNode = audioContext.createGain();
 
-	 analyser.connect(audioGainNode);
-	 audioGainNode.connect(audioContext.destination);
+	analyser.connect(audioGainNode);
+	audioGainNode.connect(audioContext.destination);
 
 	//da ne skroluje sve
 	document.getElementById( "scene-canvas" ).onwheel = function(event){
@@ -234,28 +264,47 @@ window.onload = function()
 	};
 
 	//document.getElementById("error-button").onclick = cbErrorButtonClick;
-    loadSound();
 
-};
+	myAudio = new Audio();
+
+
+	myAudio.addEventListener('canplay', function(){
+		nsource = audioContext.createMediaElementSource(myAudio);
+		getPlaybackName();
+		visualize(null,0);
+		//myAudio.play();
+	},false);
+	myAudio.addEventListener("loadeddata", function() {
+		durationTime = myAudio.durationTime;
+	});
+	myAudio.onloadedmetadata = function() {
+		alert(myAudio.duration);
+	};
+
+	myAudio.src = "/getAudioFile?sifSnimka=" + getParameterByName('id');
+	//alert(2);
+	//loadSound();
+}, false);
 
 function cbCanvasScroll(e)
 {
 	var e = window.event || e;
 	var detail = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-
+	var nextTime;
 	if(detail > 0)
 	{
 		//startTime = startTime + 1;// Math.min(1, audioContext.startTime + 1);
-		offset = Math.max(0,audioContext.currentTime - startTime - 1);
+		nextTime = Math.max(0,myAudio.currentTime - startTime - 1);
 
 	}
 	else
 	{
-		offset = Math.min(buffer.duration,audioContext.currentTime - startTime + 1);
+		nextTime = Math.min(myAudio.duration,myAudio.currentTime - startTime + 1);
 		//startTime = startTime - 1;
 	}
 
-	audioBufferSourceNode.stop();
+	myAudio.currentTime = nextTime;
+	//audioBufferSourceNode.stop();
 
 }
 
@@ -353,25 +402,35 @@ function showChooser()
 function visualize(buf,off)
 {
 
+/*
 	 audioBufferSourceNode = audioContext.createBufferSource();
 
 	 audioBufferSourceNode.buffer = buf;
-	 analyser.smoothingTimeConstant = 0.75;
-	 audioGainNode.gain.value = volume;
+*/
 
+	analyser.smoothingTimeConstant = 0.75;
+	audioGainNode.gain.value = volume;
+	nsource.connect(analyser);
+	showScene();
+	myAudio.play();
+	enableCommands();
 
+/*
 	audioBufferSourceNode.connect(analyser);
 
-	 //set pitch/tempo
 
 	audioBufferSourceNode.start(audioContext.currentTime,off);
-
+*/
 	audioPlaying = true;
 	startTime = audioContext.currentTime - off;
+
+	//durationTime = myAudio.duration;
+/*
 	durationTime = buf.duration;
+*/
 
 	draw(0);
-
+/*
 	 audioBufferSourceNode.onended = function()
 	 {
 			 //audioBufferSourceNode.stop();
@@ -400,11 +459,12 @@ function visualize(buf,off)
 			 	//showChooser();
 			 }
 	 };
-
+*/
 }
 
 function generateTime(seconds)
 {
+
 	var minutes = Math.floor(seconds / 60);
 	var seconds = Math.floor(seconds % 60);
 
@@ -441,62 +501,68 @@ function clearDraw()
 
  function draw(currentTimeStamp)
  {
+
+/*
  if(playPauseClicked){
      elapsedTime = playPauseOffset;
  }
  else elapsedTime = audioContext.currentTime - startTime;
- audioDrawingArray = new Uint8Array(analyser.frequencyBinCount);
- analyser.getByteFrequencyData(audioDrawingArray);
+ */
+ elapsedTime = myAudio.currentTime;
 
- ctx.clearRect(0, 0, 600, 600);
+	 audioDrawingArray = new Uint8Array(analyser.frequencyBinCount);
+	 analyser.getByteFrequencyData(audioDrawingArray);
 
- ctx.lineWidth = 1.0;
- ctx.fillStyle = "#FFFFFF";
- ctx.strokeStyle = "#DDDDDD";
- ctx.beginPath();
- ctx.moveTo(300 + Math.cos(0.5 * Math.PI) * (radius + (audioDrawingArray[0] / 256 * graphSize)), 300 + Math.sin(0.5 * Math.PI) * (radius + (audioDrawingArray[0] / 256 * graphSize)));
+	 if(!playPauseClicked) ctx.clearRect(0, 0, 600, 600);
 
- for(i = 1; i < (audioDrawingArray.length / 4); i++)
- {
- xc = ((300 + Math.cos((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))) + (300 + Math.cos((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize)))) / 2;
- yc = ((300 + Math.sin((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))) + (300 + Math.sin((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize)))) / 2;
- ctx.quadraticCurveTo((300 + Math.cos((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), (300 + Math.sin((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), xc, yc);
- }
+	 ctx.lineWidth = 1.0;
+	 ctx.fillStyle = "#FFFFFF";
+	 ctx.strokeStyle = "#DDDDDD";
+	 ctx.beginPath();
+	 if(!playPauseClicked) {
+		 ctx.moveTo(300 + Math.cos(0.5 * Math.PI) * (radius + (audioDrawingArray[0] / 256 * graphSize)), 300 + Math.sin(0.5 * Math.PI) * (radius + (audioDrawingArray[0] / 256 * graphSize)));
 
- ctx.quadraticCurveTo((300 + Math.cos((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), (300 + Math.sin((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), (300 + Math.cos((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize))), (300 + Math.sin((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize))));
+		 for (i = 1; i < (audioDrawingArray.length / 4); i++) {
+			 xc = ((300 + Math.cos((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))) + (300 + Math.cos((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize)))) / 2;
+			 yc = ((300 + Math.sin((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))) + (300 + Math.sin((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize)))) / 2;
+			 ctx.quadraticCurveTo((300 + Math.cos((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), (300 + Math.sin((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), xc, yc);
+		 }
 
- ctx.moveTo(300 + Math.cos(0.5 * Math.PI) * (radius + (audioDrawingArray[0] / 256 * graphSize)), 300 + Math.sin(0.5 * Math.PI) * (radius + (audioDrawingArray[0] / 256 * graphSize)));
+		 ctx.quadraticCurveTo((300 + Math.cos((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), (300 + Math.sin((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), (300 + Math.cos((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize))), (300 + Math.sin((0.5 - (i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize))));
 
- for(i = 1; i < (audioDrawingArray.length / 4); i++)
- {
- xc = ((300 + Math.cos((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))) + (300 + Math.cos((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize)))) / 2;
- yc = ((300 + Math.sin((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))) + (300 + Math.sin((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize)))) / 2;
- ctx.quadraticCurveTo((300 + Math.cos((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), (300 + Math.sin((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), xc, yc);
- }
+		 ctx.moveTo(300 + Math.cos(0.5 * Math.PI) * (radius + (audioDrawingArray[0] / 256 * graphSize)), 300 + Math.sin(0.5 * Math.PI) * (radius + (audioDrawingArray[0] / 256 * graphSize)));
 
- ctx.quadraticCurveTo((300 + Math.cos((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), (300 + Math.sin((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), (300 + Math.cos((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize))), (300 + Math.sin((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize))));
+		 for (i = 1; i < (audioDrawingArray.length / 4); i++) {
+			 xc = ((300 + Math.cos((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))) + (300 + Math.cos((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize)))) / 2;
+			 yc = ((300 + Math.sin((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))) + (300 + Math.sin((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize)))) / 2;
+			 ctx.quadraticCurveTo((300 + Math.cos((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), (300 + Math.sin((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), xc, yc);
+		 }
 
- ctx.fill();
- ctx.stroke();
+		 ctx.quadraticCurveTo((300 + Math.cos((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), (300 + Math.sin((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i] / 256 * graphSize))), (300 + Math.cos((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize))), (300 + Math.sin((0.5 - (4 - i / audioDrawingArray.length * 4)) * Math.PI) * (radius + (audioDrawingArray[i + 1] / 256 * graphSize))));
+	 }
+	 ctx.fill();
+	 ctx.stroke();
 
- ctx.fillStyle = "#FFFFFF";
- ctx.beginPath();
- ctx.arc(300, 300, radius, 0, 2 * Math.PI, false);
- ctx.fill();
+	 ctx.fillStyle = "#FFFFFF";
+	 ctx.beginPath();
+	 ctx.arc(300, 300, radius, 0, 2 * Math.PI, false);
+	 ctx.fill();
 
  ctx.globalAlpha = (100 - Math.max(Math.min(volumeAnimation, 100), 0)) / 100;
 
- ctx.fillStyle = "#222222";
+	 ctx.fillStyle = "#222222";
  ctx.font = "100 75px Roboto";
  ctx.textAlign = "center";
  ctx.textBaseline = "middle";
  ctx.fillText(generateTime(elapsedTime), 300, 300);
 
- ctx.fillStyle = "#888888";
- ctx.font = "100 25px Roboto";
- ctx.textAlign = "center";
- ctx.textBaseline = "middle";
- ctx.fillText("-" + generateTime(durationTime - elapsedTime), 300, 375);
+ if(durationTime != null) {
+	 ctx.fillStyle = "#888888";
+	 ctx.font = "100 25px Roboto";
+	 ctx.textAlign = "center";
+	 ctx.textBaseline = "middle";
+	 ctx.fillText("-" + generateTime(durationTime - elapsedTime), 300, 375);
+ }
 
  ctx.save();
  ctx.beginPath();
@@ -581,11 +647,13 @@ function clearDraw()
  ctx.arc(300, 300, radius, 0, 2 * Math.PI, false);
  ctx.stroke();
 
- ctx.strokeStyle = "#3E9DFF";
- ctx.lineWidth = 2.0;
- ctx.beginPath();
- ctx.arc(300, 300, 150, -0.5 * Math.PI, (elapsedTime / durationTime) * Math.PI * 2 - (0.5 * Math.PI), false);
- ctx.stroke();
+ if(durationTime != null) {
+	 ctx.strokeStyle = "#3E9DFF";
+	 ctx.lineWidth = 2.0;
+	 ctx.beginPath();
+	 ctx.arc(300, 300, 150, -0.5 * Math.PI, (elapsedTime / durationTime) * Math.PI * 2 - (0.5 * Math.PI), false);
+	 ctx.stroke();
+ }
 
  if(volumeAnimation > 0)
  {
